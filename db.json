@@ -103,7 +103,7 @@
     },
     {
       "id": 5,
-       "albumId": 1,
+       "albumId": 4,
       "name": "Smooth Track",
       "desc": "Instrumental chill music",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtK12D0hbXMlA-wXrFBDsejyfhsbVyT7QCxQ&s",
@@ -112,7 +112,7 @@
     },
     {
       "id": 6,
-       "albumId": 1,
+       "albumId": 2,
       "name": "Smooth Track",
       "desc": "Instrumental chill music",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtK12D0hbXMlA-wXrFBDsejyfhsbVyT7QCxQ&s",
