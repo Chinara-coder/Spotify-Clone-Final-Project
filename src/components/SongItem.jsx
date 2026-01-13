@@ -1,8 +1,7 @@
-const SongItem = ({ image, name, desc, id }) => {
+const SongItem = ({ image, name, desc, audio }) => {
   return (
-    <div className="w-52 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group">
+    <div className="w-44 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group">
       
-      {/* IMAGE */}
       <div className="relative">
         <img
           src={image}
@@ -12,6 +11,7 @@ const SongItem = ({ image, name, desc, id }) => {
 
         {/* PLAY BUTTON */}
         <button
+          onClick={() => new Audio(audio).play()}
           className="
             absolute bottom-3 right-3
             bg-green-500 w-12 h-12
@@ -27,14 +27,8 @@ const SongItem = ({ image, name, desc, id }) => {
         </button>
       </div>
 
-      {/* TEXT */}
-      <p className="font-bold mt-3 mb-1 truncate">
-        {name}
-      </p>
-
-      <p className="text-slate-200 text-sm line-clamp-2">
-        {desc}
-      </p>
+      <p className="font-bold mt-3 mb-1 truncate">{name}</p>
+      <p className="text-slate-200 text-sm line-clamp-2">{desc}</p>
     </div>
   )
 }

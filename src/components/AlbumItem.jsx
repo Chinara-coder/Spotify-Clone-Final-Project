@@ -1,13 +1,16 @@
-import React from "react"
-import { useNavigate } from "react-router-dom"
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const AlbumItem = ({ image, name, desc }) => {
+const AlbumItem = ({ id, image, name, desc, bgColor }) => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
   return (
-    <div className="w-52 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group">
+    <div className="w-44 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group">
       
-      <div onClick={()=>navigate('/album/${id}')} className="relative">
+      <div
+        onClick={() => navigate(`/album/${id}`, { state: { bgColor } })}
+        className="relative "
+      >
         <img
           src={image}
           alt={name}
@@ -30,15 +33,10 @@ const AlbumItem = ({ image, name, desc }) => {
         </button>
       </div>
 
-      <p className="font-bold mt-3 mb-1 truncate">
-        {name}
-      </p>
-
-      <p className="text-slate-200 text-sm line-clamp-2">
-        {desc}
-      </p>
+      <p className="font-bold mt-3 mb-1 truncate">{name}</p>
+      <p className="text-slate-200 text-sm line-clamp-2">{desc}</p>
     </div>
-  )
-}
+  );
+};
 
-export default AlbumItem
+export default AlbumItem;
