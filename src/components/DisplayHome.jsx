@@ -8,12 +8,10 @@ const DisplayHome = () => {
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
-    // Bütün albomları gətir
     fetch("http://localhost:3001/albums")
       .then(res => res.json())
       .then(data => setAlbums(data));
 
-    // Bütün song-ları gətir (və ya top hits)
     fetch("http://localhost:3001/songs")
       .then(res => res.json())
       .then(data => setSongs(data));
@@ -33,8 +31,7 @@ const DisplayHome = () => {
               name={item.name}
               desc={item.desc}
               image={item.image}
-                bgColor={item.bgColor}
-
+              bgColor={item.bgColor}
             />
           ))}
         </div>
@@ -46,10 +43,10 @@ const DisplayHome = () => {
           {songs.map(item => (
             <SongItem
               key={item.id}
+              id={item.id}      
               name={item.name}
               desc={item.desc}
               image={item.image}
-              audio={item.audio}
             />
           ))}
         </div>

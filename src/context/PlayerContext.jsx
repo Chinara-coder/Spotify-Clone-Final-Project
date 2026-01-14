@@ -4,51 +4,107 @@ import { songsData } from "../assets/assets";
 export const PlayerContext = createContext();
 
 const PlayerContextProvider = ({ children }) => {
-
-  // 🔗 Refs
+  // Refs
   const audioRef = useRef(null);
   const seekBg = useRef(null);
   const seekBar = useRef(null);
 
-  // 🎵 Hazırki mahnı
-  const [track, setTrack] = useState(songsData[0]);
+  //  API-dən gələn mahnılar
+  const [songs, setSongs] = useState([]);
 
-  // ▶️ Play / Pause statusu
+  //  Hazırki mahnı
+  const [track, setTrack] = useState(null);
+
+  // Play / Pause statusu
   const [playStatus, setPlayStatus] = useState(false);
 
-  // ⏱ Zaman məlumatları
+  // Zaman məlumatları
   const [time, setTime] = useState({
     currentTime: { minute: 0, second: 0 },
     totalTime: { minute: 0, second: 0 },
   });
 
-  // ▶️ Play
+  // API-dən songs fetch et
+  useEffect(() => {
+    fetch("http://localhost:3001/songs")
+      .then((res) => res.json())
+      .then((data) => {
+        setSongs(data);
+        if (data.length > 0) {
+          setTrack(data[0]); // ilk mahnı
+        }
+      })
+      .catch((err) => console.error("FETCH ERROR:", err));
+  }, []);
+
+  // Play
   const play = () => {
     if (!audioRef.current) return;
-    audioRef.current.play();
-    setPlayStatus(true);
+    audioRef.current
+      .play()
+      .then(() => setPlayStatus(true))
+      .catch(() => {});
   };
 
-  // ⏸ Pause
+  //  Pause
   const pause = () => {
     if (!audioRef.current) return;
     audioRef.current.pause();
     setPlayStatus(false);
   };
 
-  // 🎶 ID ilə mahnı çalmaq
+  // ID ilə mahnı seç (API-dən)
   const playWithId = (id) => {
-    setTrack(songsData[id]);
+    const song = songs.find(
+      (s) => String(s.id) === String(id)
+    );
 
-    // track dəyişəndən sonra play
-    setTimeout(() => {
-      if (!audioRef.current) return;
-      audioRef.current.play();
-      setPlayStatus(true);
-    }, 0);
+    if (!song) {
+      console.log("SONG TAPILMADI:", id);
+      return;
+    }
+
+    setTrack(song);
   };
 
-  // ⏱ Zaman + progress bar
+  const previous = () => {
+  if (!track || songs.length === 0) return;
+
+  const currentIndex = songs.findIndex(
+    (s) => String(s.id) === String(track.id)
+  );
+
+  if (currentIndex > 0) {
+    setTrack(songs[currentIndex - 1]);
+  }
+};
+
+const next = () => {
+  if (!track || songs.length === 0) return;
+
+  const currentIndex = songs.findIndex(
+    (s) => String(s.id) === String(track.id)
+  );
+
+  if (currentIndex < songs.length - 1) {
+    setTrack(songs[currentIndex + 1]);
+  }
+};
+
+
+  //  Track dəyişəndə avtomatik play
+  useEffect(() => {
+    if (!audioRef.current || !track) return;
+
+    audioRef.current.src = track.audio;
+    audioRef.current.load();
+    audioRef.current
+      .play()
+      .then(() => setPlayStatus(true))
+      .catch(() => setPlayStatus(false));
+  }, [track]);
+
+  //  Zaman + progress bar
   useEffect(() => {
     if (!audioRef.current) return;
 
@@ -57,14 +113,13 @@ const PlayerContextProvider = ({ children }) => {
     const updateTime = () => {
       if (!audio.duration) return;
 
-      // Progress bar
       const progress =
         (audio.currentTime / audio.duration) * 100;
+
       if (seekBar.current) {
         seekBar.current.style.width = `${progress}%`;
       }
 
-      // Zaman hesabı
       setTime({
         currentTime: {
           minute: Math.floor(audio.currentTime / 60),
@@ -78,13 +133,11 @@ const PlayerContextProvider = ({ children }) => {
     };
 
     audio.addEventListener("timeupdate", updateTime);
-
-    return () => {
+    return () =>
       audio.removeEventListener("timeupdate", updateTime);
-    };
   }, [track]);
 
-  // 🌍 Context dəyərləri
+  //  Context dəyərləri
   const contextValue = {
     audioRef,
     seekBg,
@@ -95,11 +148,13 @@ const PlayerContextProvider = ({ children }) => {
     play,
     pause,
     playWithId,
+    previous,next
   };
 
   return (
     <PlayerContext.Provider value={contextValue}>
       {children}
+      <audio ref={audioRef} />
     </PlayerContext.Provider>
   );
 };

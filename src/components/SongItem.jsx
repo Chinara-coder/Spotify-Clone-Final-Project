@@ -1,7 +1,14 @@
-const SongItem = ({ image, name, desc, audio }) => {
+import React, { useContext } from "react";
+import { PlayerContext } from "../context/PlayerContext";
+
+const SongItem = ({ id, image, name, desc }) => {
+  const { playWithId } = useContext(PlayerContext);
+
   return (
-    <div className="w-44 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group">
-      
+    <div
+      onClick={() => playWithId(id)}
+      className="w-44 shrink-0 p-3 rounded cursor-pointer hover:bg-[#ffffff26] transition group"
+    >
       <div className="relative">
         <img
           src={image}
@@ -11,7 +18,10 @@ const SongItem = ({ image, name, desc, audio }) => {
 
         {/* PLAY BUTTON */}
         <button
-          onClick={() => new Audio(audio).play()}
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 vacibdir
+            playWithId(id);
+          }}
           className="
             absolute bottom-3 right-3
             bg-green-500 w-12 h-12
@@ -30,7 +40,7 @@ const SongItem = ({ image, name, desc, audio }) => {
       <p className="font-bold mt-3 mb-1 truncate">{name}</p>
       <p className="text-slate-200 text-sm line-clamp-2">{desc}</p>
     </div>
-  )
-}
+  );
+};
 
-export default SongItem
+export default SongItem;
