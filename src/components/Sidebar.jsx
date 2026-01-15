@@ -1,6 +1,10 @@
-import { assets } from '../assets/assets'
+import { assets } from "../assets/assets";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <div className="w-[25%] h-full p-2 hidden lg:flex flex-col gap-2 text-white">
 
@@ -11,12 +15,22 @@ const Sidebar = () => {
 
       {/* HOME + SEARCH */}
       <div className="bg-[#121212] rounded flex flex-col gap-4 py-4">
-        <div className="flex items-center gap-3 pl-6 cursor-pointer">
-          <img className="w-6" src={assets.home_icon} alt="Home" />
-          <p className="font-bold">Home</p>
-        </div>
 
-        <div className="flex items-center gap-3 pl-6 cursor-pointer">
+        {/* HOME */}
+       <div
+  onClick={() => navigate("/")}
+  className="
+    flex items-center gap-3 pl-6 cursor-pointer
+    text-gray-400
+    hover:text-white
+  "
+>
+  <img className="w-6" src={assets.home_icon} alt="Home" />
+  <p className="font-bold">Home</p>
+</div>
+
+        {/* SEARCH */}
+        <div className="flex items-center gap-3 pl-6 cursor-pointer text-gray-400 hover:text-white">
           <img className="w-6" src={assets.search_icon} alt="Search" />
           <p className="font-bold">Search</p>
         </div>
@@ -31,7 +45,7 @@ const Sidebar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-             <img className="w-5" src={assets.plus_icon} alt="" />
+            <img className="w-5" src={assets.plus_icon} alt="" />
             <img className="w-5" src={assets.arrow_icon} alt="" />
           </div>
         </div>
@@ -57,7 +71,7 @@ const Sidebar = () => {
       </div>
 
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
