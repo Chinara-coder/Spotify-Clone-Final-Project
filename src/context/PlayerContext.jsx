@@ -40,12 +40,15 @@ const PlayerContextProvider = ({ children }) => {
   // Play
   const play = () => {
     if (!audioRef.current) return;
-    audioRef.current
-      .play()
-      .then(() => setPlayStatus(true))
-      .catch(() => {});
+    // audioRef.current
+    //   .play()
+    //   .then(() => setPlayStatus(true))
+    //   .catch(() => {});
   };
 
+
+
+  
   //  Pause
   const pause = () => {
     if (!audioRef.current) return;

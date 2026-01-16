@@ -1,21 +1,30 @@
 import React, { useContext } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Player from './components/Player'
 import Display from './components/Display'
-import {PlayerContext} from './context/PlayerContext'
+import Login from './components/Login' // ⬅️ ƏLAVƏ ET
+import { PlayerContext } from './context/PlayerContext'
 
 const App = () => {
-
-const {track} = useContext(PlayerContext);
+  const { track } = useContext(PlayerContext);
 
   return (
-    <div className='h-screen bg-black'>
-      <div className='h-[90%] flex cursor-pointer'>
-        <Sidebar />
-        <Display />
-      </div>
-      <Player />
-    </div>
+    <Routes>
+      {/* ⬅️ Login route */}
+      <Route path="/login" element={<Login />} />
+      
+      {/* ⬅️ Main Spotify layout */}
+      <Route path="/*" element={
+        <div className='h-screen bg-black'>
+          <div className='h-[90%] flex cursor-pointer'>
+            <Sidebar />
+            <Display />
+          </div>
+          <Player />
+        </div>
+      } />
+    </Routes>
   )
 }
 

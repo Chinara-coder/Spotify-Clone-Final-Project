@@ -11,12 +11,17 @@ const AlbumItem = ({ id, image, name, desc, bgColor }) => {
     
     // İlk mahnını tap və oxut
     fetch(`http://localhost:3001/songs?albumId=${id}`)
-      .then(res => res.json())
-      .then(songs => {
-        if (songs.length > 0) {
-          playWithId(songs[0].id);
-        }
-      });
+  .then(res => {
+    if (!res.ok) throw new Error("API error");
+    return res.json();
+  })
+  .then(songs => {
+    if (songs.length > 0) {
+      playWithId(String(songs[0].id));
+    }
+  })
+  .catch(err => console.error("ALBUM FETCH ERROR:", err));
+
   };
 
   return (
