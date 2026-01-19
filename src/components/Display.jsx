@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import DisplayHome from "./DisplayHome";
 import DisplayAlbum from "./DisplayAlbum";
+import DisplaySearch from "./DisplaySearch";
+import DisplayInstallApp from "./DisplayInstallApp";
+
 
 const Display = () => {
   const displayRef = useRef();
@@ -28,6 +31,10 @@ const Display = () => {
       <Routes>
         <Route path="/" element={<DisplayHome />} />
         <Route path="/album/:id" element={<DisplayAlbum />} />
+        <Route path="/search" element={<DisplaySearch />} />
+          <Route path="/install" element={<DisplayInstallApp />} />
+
+
       </Routes>
     </div>
   );

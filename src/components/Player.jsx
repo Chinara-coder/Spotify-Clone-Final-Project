@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { PlayerContext } from "../context/PlayerContext";
 
@@ -13,84 +13,105 @@ const Player = () => {
     time,
     audioRef,
     previous,
-    next
+    next,
+    isRepeat,
+    setIsRepeat,
   } = useContext(PlayerContext);
 
-  // Seek bar-a klik edəndə
+  // 🔊 VOLUME
+  const [volume, setVolume] = useState(0.8);
+
+  const handleVolumeChange = (e) => {
+    const value = Number(e.target.value);
+    setVolume(value);
+    if (audioRef.current) {
+      audioRef.current.volume = value;
+    }
+  };
+
   const seekSong = (e) => {
     if (!audioRef.current || !seekBg.current) return;
-    
-    const seekWidth = seekBg.current.offsetWidth;
+    const width = seekBg.current.offsetWidth;
     const clickX = e.nativeEvent.offsetX;
     const duration = audioRef.current.duration;
-    
-    audioRef.current.currentTime = (clickX / seekWidth) * duration;
+    audioRef.current.currentTime = (clickX / width) * duration;
   };
 
-  // Zamanı formatla (0:05 formatında)
-  const formatTime = (time) => {
-    const minutes = time.minute || 0;
-    const seconds = time.second || 0;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  const formatTime = (t) => {
+    const m = t.minute || 0;
+    const s = t.second || 0;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
-  // Guard
   if (!track) {
-    return (
-      <div className="h-[10%] bg-black border-t border-gray-800" />
-    );
+    return <div className="h-[10%] bg-black border-t border-gray-800" />;
   }
 
   return (
     <div className="h-[10%] bg-black flex justify-between items-center text-white px-4">
       {/* LEFT */}
-      <div className="hidden lg:flex items-center gap-4">
-        <img className="w-12 rounded" src={track.image} alt={track.name} />
+      <div className="hidden lg:flex items-center gap-4 relative">
+        <img
+          className="w-12 h-12 rounded object-cover"
+          src={track.image}
+          alt={track.name}
+        />
+
+        {/* 🎵 PLAYING GIF */}
+        {playStatus && (
+          <img
+            src="/images/playing.gif"
+            alt="playing"
+            className="absolute left-[180px] bottom-2 w-6 h-6"
+          />
+        )}
+
         <div>
           <p className="text-sm font-semibold">{track.name}</p>
-          <p className="text-xs text-gray-400">{track.desc?.slice(0, 12)}</p>
+          <p className="text-xs text-gray-400">
+            {track.desc?.slice(0, 14)}
+          </p>
         </div>
       </div>
 
       {/* CENTER */}
       <div className="flex flex-col items-center gap-1 m-auto">
         <div className="flex gap-4">
-          <img 
-            className="w-4 cursor-pointer opacity-60 hover:opacity-100" 
-            src={assets.shuffle_icon} 
-            alt="shuffle" 
-          />
-          <img onClick={previous}
-            className="w-4 cursor-pointer opacity-60 hover:opacity-100" 
-            src={assets.prev_icon} 
-            alt="previous" 
+          <img src={assets.shuffle_icon} className="w-4 opacity-60" />
+
+          <img
+            onClick={previous}
+            src={assets.prev_icon}
+            className="w-4 cursor-pointer opacity-60 hover:opacity-100"
           />
 
           {playStatus ? (
             <img
               onClick={pause}
-              className="w-4 cursor-pointer hover:scale-110 transition"
               src={assets.pause_icon}
-              alt="pause"
+              className="w-4 cursor-pointer hover:scale-110"
             />
           ) : (
             <img
               onClick={play}
-              className="w-4 cursor-pointer hover:scale-110 transition"
               src={assets.play_icon}
-              alt="play"
+              className="w-4 cursor-pointer hover:scale-110"
             />
           )}
 
-          <img onClick={next}
-            className="w-4 cursor-pointer opacity-60 hover:opacity-100" 
-            src={assets.next_icon} 
-            alt="next" 
+          <img
+            onClick={next}
+            src={assets.next_icon}
+            className="w-4 cursor-pointer opacity-60 hover:opacity-100"
           />
-          <img 
-            className="w-4 cursor-pointer opacity-60 hover:opacity-100" 
-            src={assets.loop_icon} 
-            alt="loop" 
+
+          {/* 🔁 REPEAT */}
+          <img
+            src={assets.loop_icon}
+            onClick={() => setIsRepeat((p) => !p)}
+            className={`w-4 cursor-pointer ${
+              isRepeat ? "opacity-100" : "opacity-60"
+            }`}
           />
         </div>
 
@@ -102,11 +123,11 @@ const Player = () => {
           <div
             ref={seekBg}
             onClick={seekSong}
-            className="w-[60vw] max-w-lg bg-gray-600 h-1 rounded-full cursor-pointer group"
+            className="w-[60vw] max-w-lg bg-gray-600 h-1 rounded-full cursor-pointer"
           >
             <hr
               ref={seekBar}
-              className="h-1 border-none w-0 bg-green-500 rounded-full relative group-hover:bg-green-400"
+              className="h-1 w-0 bg-green-500 rounded-full"
             />
           </div>
 
@@ -116,18 +137,27 @@ const Player = () => {
         </div>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT — BÜTÜN ICONLAR + VOLUME */}
       <div className="hidden lg:flex items-center gap-2 opacity-75">
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.plays_icon} alt="" />
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.mic_icon} alt="" />
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.queue_icon} alt="" />
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.speaker_icon} alt="" />
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.volume_icon} alt="" />
-        <div className="w-20 bg-gray-600 h-1 rounded">
-          <div className="w-1/2 bg-white h-1 rounded"></div>
-        </div>
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.mini_player_icon} alt="" />
-        <img className="w-4 cursor-pointer hover:opacity-100" src={assets.zoom_icon} alt="" />
+        <img src={assets.plays_icon} className="w-4 cursor-pointer hover:opacity-100" />
+        <img src={assets.mic_icon} className="w-4 cursor-pointer hover:opacity-100" />
+        <img src={assets.queue_icon} className="w-4 cursor-pointer hover:opacity-100" />
+        <img src={assets.speaker_icon} className="w-4 cursor-pointer hover:opacity-100" />
+
+        {/* 🔊 VOLUME */}
+        <img src={assets.volume_icon} className="w-4" />
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="w-20 h-1 accent-green-500 cursor-pointer"
+        />
+
+        <img src={assets.mini_player_icon} className="w-4 cursor-pointer hover:opacity-100" />
+        <img src={assets.zoom_icon} className="w-4 cursor-pointer hover:opacity-100" />
       </div>
     </div>
   );

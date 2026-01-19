@@ -5,6 +5,7 @@ import Player from './components/Player'
 import Display from './components/Display'
 import Login from './components/Login' // ⬅️ ƏLAVƏ ET
 import { PlayerContext } from './context/PlayerContext'
+import DisplayInstallApp from "./components/DisplayInstallApp";
 
 const App = () => {
   const { track } = useContext(PlayerContext);
@@ -13,7 +14,7 @@ const App = () => {
     <Routes>
       {/* ⬅️ Login route */}
       <Route path="/login" element={<Login />} />
-      
+<Route path="/install" element={<DisplayInstallApp />} />
       {/* ⬅️ Main Spotify layout */}
       <Route path="/*" element={
         <div className='h-screen bg-black'>

@@ -1,113 +1,102 @@
 import { createContext, useRef, useState, useEffect } from "react";
-import { songsData } from "../assets/assets";
 
 export const PlayerContext = createContext();
 
 const PlayerContextProvider = ({ children }) => {
-  // Refs
+  // ================= REFS =================
   const audioRef = useRef(null);
   const seekBg = useRef(null);
   const seekBar = useRef(null);
 
-  //  API-dən gələn mahnılar
-  const [songs, setSongs] = useState([]);
-
-  //  Hazırki mahnı
-  const [track, setTrack] = useState(null);
-
-  // Play / Pause statusu
+  // ================= STATE =================
+  const [songs, setSongs] = useState([]);      // API-dən gələn bütün mahnılar
+  const [track, setTrack] = useState(null);    // Hazırki mahnı
   const [playStatus, setPlayStatus] = useState(false);
 
-  // Zaman məlumatları
   const [time, setTime] = useState({
     currentTime: { minute: 0, second: 0 },
     totalTime: { minute: 0, second: 0 },
   });
 
-  // API-dən songs fetch et
+  // 🔁 REPEAT
+  const [isRepeat, setIsRepeat] = useState(false);
+
+  // ================= FETCH SONGS =================
   useEffect(() => {
     fetch("http://localhost:3001/songs")
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setSongs(data);
         if (data.length > 0) {
-          setTrack(data[0]); // ilk mahnı
+          setTrack(data[0]); // default ilk mahnı
         }
       })
-      .catch((err) => console.error("FETCH ERROR:", err));
+      .catch(err => console.error("FETCH ERROR:", err));
   }, []);
 
-  // Play
-  const play = () => {
+  // ================= PLAY / PAUSE =================
+  const play = async () => {
     if (!audioRef.current) return;
-    // audioRef.current
-    //   .play()
-    //   .then(() => setPlayStatus(true))
-    //   .catch(() => {});
+
+    try {
+      await audioRef.current.play();
+      setPlayStatus(true);
+    } catch (err) {
+      console.log("PLAY BLOCKED:", err);
+    }
   };
 
-
-
-  
-  //  Pause
   const pause = () => {
     if (!audioRef.current) return;
     audioRef.current.pause();
     setPlayStatus(false);
   };
 
-  // ID ilə mahnı seç (API-dən)
+  // ================= PLAY WITH ID =================
   const playWithId = (id) => {
-    const song = songs.find(
-      (s) => String(s.id) === String(id)
-    );
-
-    if (!song) {
-      console.log("SONG TAPILMADI:", id);
-      return;
-    }
+    const song = songs.find(s => String(s.id) === String(id));
+    if (!song) return;
 
     setTrack(song);
+    setPlayStatus(true);
+
+    // user action olduğu üçün autoplay icazəlidir
+    setTimeout(() => play(), 0);
   };
 
+  // ================= PREVIOUS / NEXT =================
   const previous = () => {
-  if (!track || songs.length === 0) return;
+    if (!track || songs.length === 0) return;
 
-  const currentIndex = songs.findIndex(
-    (s) => String(s.id) === String(track.id)
-  );
+    const index = songs.findIndex(s => String(s.id) === String(track.id));
+    if (index > 0) {
+      setTrack(songs[index - 1]);
+    }
+  };
 
-  if (currentIndex > 0) {
-    setTrack(songs[currentIndex - 1]);
-  }
-};
+  const next = () => {
+    if (!track || songs.length === 0) return;
 
-const next = () => {
-  if (!track || songs.length === 0) return;
+    const index = songs.findIndex(s => String(s.id) === String(track.id));
+    if (index < songs.length - 1) {
+      setTrack(songs[index + 1]);
+    }
+  };
 
-  const currentIndex = songs.findIndex(
-    (s) => String(s.id) === String(track.id)
-  );
-
-  if (currentIndex < songs.length - 1) {
-    setTrack(songs[currentIndex + 1]);
-  }
-};
-
-
-  //  Track dəyişəndə avtomatik play
+  // ================= TRACK CHANGE =================
   useEffect(() => {
     if (!audioRef.current || !track) return;
 
     audioRef.current.src = track.audio;
     audioRef.current.load();
+
     audioRef.current
       .play()
       .then(() => setPlayStatus(true))
       .catch(() => setPlayStatus(false));
   }, [track]);
 
-  //  Zaman + progress bar
+  // ================= TIME + SEEK BAR =================
   useEffect(() => {
     if (!audioRef.current) return;
 
@@ -116,9 +105,7 @@ const next = () => {
     const updateTime = () => {
       if (!audio.duration) return;
 
-      const progress =
-        (audio.currentTime / audio.duration) * 100;
-
+      const progress = (audio.currentTime / audio.duration) * 100;
       if (seekBar.current) {
         seekBar.current.style.width = `${progress}%`;
       }
@@ -136,11 +123,35 @@ const next = () => {
     };
 
     audio.addEventListener("timeupdate", updateTime);
-    return () =>
-      audio.removeEventListener("timeupdate", updateTime);
+    return () => audio.removeEventListener("timeupdate", updateTime);
   }, [track]);
 
-  //  Context dəyərləri
+  // ================= 🔁 REPEAT / SONG ENDED =================
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+
+    const handleEnded = () => {
+      console.log("SONG ENDED");
+
+      if (isRepeat) {
+        // 🔁 repeat ON
+        audio.currentTime = 0;
+        audio.play().catch(err =>
+          console.log("REPEAT PLAY BLOCKED:", err)
+        );
+      } else {
+        // ⏹ repeat OFF
+        setPlayStatus(false);
+      }
+    };
+
+    audio.addEventListener("ended", handleEnded);
+    return () => audio.removeEventListener("ended", handleEnded);
+  }, [isRepeat]);
+
+  // ================= CONTEXT VALUE =================
   const contextValue = {
     audioRef,
     seekBg,
@@ -151,9 +162,13 @@ const next = () => {
     play,
     pause,
     playWithId,
-    previous,next
+    previous,
+    next,
+    isRepeat,
+    setIsRepeat,
   };
 
+  // ================= PROVIDER =================
   return (
     <PlayerContext.Provider value={contextValue}>
       {children}

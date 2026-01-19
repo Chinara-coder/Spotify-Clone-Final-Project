@@ -6,7 +6,9 @@ import { PlayerContext } from "../context/PlayerContext";
 
 const DisplayAlbum = () => {
   const { id } = useParams();
-  const { playWithId } = useContext(PlayerContext);
+
+  // 🔥 PlayerContext-dən lazım olanlar
+  const { playWithId, track, playStatus } = useContext(PlayerContext);
 
   const [albumData, setAlbumData] = useState(null);
   const [songs, setSongs] = useState([]);
@@ -32,6 +34,7 @@ const DisplayAlbum = () => {
 
       {albumData && (
         <>
+          {/* ===== ALBUM HEADER ===== */}
           <div className="mt-10 flex gap-8 flex-col md:flex-row md:items-end">
             <img
               className="w-48 rounded"
@@ -58,6 +61,7 @@ const DisplayAlbum = () => {
             </div>
           </div>
 
+          {/* ===== TABLE HEADER ===== */}
           <div className="grid grid-cols-3 sm:grid-cols-4 mt-10 mb-4 pl-2 text-[#a7a7a7]">
             <p>
               <b className="mr-4">#</b>Title
@@ -69,35 +73,61 @@ const DisplayAlbum = () => {
 
           <hr />
 
-          {songs.map((item, index) => (
-            <div
-              key={item.id}
-              onClick={() => playWithId(item.id)}
-              className="
-                grid grid-cols-3 sm:grid-cols-4
-                gap-2 p-2
-                items-center
-                text-[#a7a7a7]
-                hover:bg-[#ffffff1a]
-                transition-colors duration-200
-                cursor-pointer
-              "
-            >
-              <p className="text-white flex items-center text-sm">
-                <b className="mr-4 text-[#a7a7a7]">{index + 1}</b>
-                <img
-                  className="inline w-10 mr-5"
-                  src={item.image}
-                  alt=""
-                />
-                {item.name}
-              </p>
+          {/* ===== SONG LIST ===== */}
+          {songs.map((item, index) => {
+            const isPlayingThisSong =
+              playStatus &&
+              track &&
+              String(track.id) === String(item.id);
 
-              <p className="text-[15px]">{albumData.name}</p>
-              <p className="text-[15px] hidden sm:block">5 days ago</p>
-              <p className="text-center">{item.duration}</p>
-            </div>
-          ))}
+            return (
+              <div
+                key={item.id}
+                onClick={() => playWithId(item.id)}
+                className="
+                  grid grid-cols-3 sm:grid-cols-4
+                  gap-2 p-2
+                  items-center
+                  text-[#a7a7a7]
+                  hover:bg-[#ffffff1a]
+                  transition-colors duration-200
+                  cursor-pointer
+                "
+              >
+                {/* ===== NUMBER / GIF + TITLE ===== */}
+                <p className="text-white flex items-center text-sm">
+                  {/* 🔢 NUMBER or 🎞️ GIF */}
+                  <span className="w-6 mr-4 flex justify-center">
+                    {isPlayingThisSong ? (
+                      <img
+                        src="/images/playing.gif"
+                        alt="playing"
+                        className="w-4 h-4 translate-x-2"
+                      />
+                    ) : (
+                      <b className="text-[#a7a7a7]">
+                        {index + 1}
+                      </b>
+                    )}
+                  </span>
+
+                  <img
+                    className="inline w-10 mr-5"
+                    src={item.image}
+                    alt={item.name}
+                  />
+
+                  {item.name}
+                </p>
+
+                <p className="text-[15px]">{albumData.name}</p>
+                <p className="text-[15px] hidden sm:block">
+                  5 days ago
+                </p>
+                <p className="text-center">{item.duration}</p>
+              </div>
+            );
+          })}
         </>
       )}
     </>

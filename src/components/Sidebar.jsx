@@ -30,7 +30,7 @@ const Sidebar = () => {
 </div>
 
         {/* SEARCH */}
-        <div className="flex items-center gap-3 pl-6 cursor-pointer text-gray-400 hover:text-white">
+        <div    onClick={() => navigate("/search")} className="flex items-center gap-3 pl-6 cursor-pointer text-gray-400 hover:text-white">
           <img className="w-6" src={assets.search_icon} alt="Search" />
           <p className="font-bold">Search</p>
         </div>
