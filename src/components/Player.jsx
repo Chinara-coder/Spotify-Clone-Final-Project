@@ -16,9 +16,11 @@ const Player = () => {
     next,
     isRepeat,
     setIsRepeat,
+    isShuffle,
+    setIsShuffle,
   } = useContext(PlayerContext);
 
-  // 🔊 VOLUME
+  // 🔊 VOLUME (NAZİK LINE – əvvəlki kimi)
   const [volume, setVolume] = useState(0.8);
 
   const handleVolumeChange = (e) => {
@@ -57,7 +59,6 @@ const Player = () => {
           alt={track.name}
         />
 
-        {/* 🎵 PLAYING GIF */}
         {playStatus && (
           <img
             src="/images/playing.gif"
@@ -76,8 +77,15 @@ const Player = () => {
 
       {/* CENTER */}
       <div className="flex flex-col items-center gap-1 m-auto">
-        <div className="flex gap-4">
-          <img src={assets.shuffle_icon} className="w-4 opacity-60" />
+        <div className="flex gap-4 items-center">
+          {/* 🔀 SHUFFLE (YALNIZ FUNKSİON ƏLAVƏ EDİLİB) */}
+          <img
+            src={assets.shuffle_icon}
+            onClick={() => setIsShuffle(p => !p)}
+            className={`w-4 cursor-pointer ${
+              isShuffle ? "opacity-100" : "opacity-60"
+            }`}
+          />
 
           <img
             onClick={previous}
@@ -108,7 +116,7 @@ const Player = () => {
           {/* 🔁 REPEAT */}
           <img
             src={assets.loop_icon}
-            onClick={() => setIsRepeat((p) => !p)}
+            onClick={() => setIsRepeat(p => !p)}
             className={`w-4 cursor-pointer ${
               isRepeat ? "opacity-100" : "opacity-60"
             }`}
@@ -123,11 +131,11 @@ const Player = () => {
           <div
             ref={seekBg}
             onClick={seekSong}
-            className="w-[60vw] max-w-lg bg-gray-600 h-1 rounded-full cursor-pointer"
+            className="w-[60vw] max-w-lg bg-gray-600 h-[2px] rounded-full cursor-pointer"
           >
             <hr
               ref={seekBar}
-              className="h-1 w-0 bg-green-500 rounded-full"
+              className="h-[4px] w-2 bg-green-500 rounded-full"
             />
           </div>
 
@@ -137,14 +145,14 @@ const Player = () => {
         </div>
       </div>
 
-      {/* RIGHT — BÜTÜN ICONLAR + VOLUME */}
+      {/* RIGHT — BÜTÜN ICONLAR GERİ QAYIDIB */}
       <div className="hidden lg:flex items-center gap-2 opacity-75">
         <img src={assets.plays_icon} className="w-4 cursor-pointer hover:opacity-100" />
         <img src={assets.mic_icon} className="w-4 cursor-pointer hover:opacity-100" />
         <img src={assets.queue_icon} className="w-4 cursor-pointer hover:opacity-100" />
         <img src={assets.speaker_icon} className="w-4 cursor-pointer hover:opacity-100" />
 
-        {/* 🔊 VOLUME */}
+        {/* 🔊 VOLUME — NAZİK */}
         <img src={assets.volume_icon} className="w-4" />
         <input
           type="range"
@@ -153,7 +161,7 @@ const Player = () => {
           step="0.01"
           value={volume}
           onChange={handleVolumeChange}
-          className="w-20 h-1 accent-green-500 cursor-pointer"
+          className="w-20 h-[4px] accent-green-500 cursor-pointer"
         />
 
         <img src={assets.mini_player_icon} className="w-4 cursor-pointer hover:opacity-100" />

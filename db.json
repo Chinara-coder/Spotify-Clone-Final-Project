@@ -1,15 +1,9 @@
 {
   "users": [
     {
-      "id": "8308",
+      "id": "9745",
       "name": "chinara",
-      "email": "chinara@gmail.com",
-      "pass": "12345"
-    },
-    {
-      "id": "da16",
-      "name": "chinara",
-      "email": "chinara@gmail.com",
+      "email": "isbatovac@gmail.com",
       "pass": "123"
     }
   ],
@@ -50,34 +44,33 @@
       "bgColor": "#e76f82"
     },
     {
-  "id": "6",
-  "name": "Chill Vibes",
-  "desc": "Relaxing and smooth tracks",
-  "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnsCwKTgAC9n8buef3YpJuWOzygtM2RwoksA&s",
-   "bgColor": "#d90429"
-},
-{
-  "id": "7",
-  "name": "Chill Vibes",
-  "desc": "Relaxing and smooth tracks",
-  "image": "https://i.scdn.co/image/ab67616d00001e02dd52604be80abba3d3bb6c00",
-  "bgColor": "#3a0ca3"
-},
-{
-  "id": "8",
-  "name": "Chill Vibes",
-  "desc": "Relaxing and smooth tracks",
-  "image": "https://charts-images.scdn.co/assets/locale_en/regional/weekly/region_cl_default.jpg",
-  "bgColor": "#f72585"
-},
-{
-  "id": "9",
-  "name": "Chill Vibes",
-  "desc": "Relaxing and smooth tracks",
-  "image": "https://i.audiomack.com/the-25-best-songs-of-2025-so-far/b59f940ed9.webp",
-  "bgColor": "#4361ee"
-}
-
+      "id": "6",
+      "name": "Chill Vibes",
+      "desc": "Relaxing and smooth tracks",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnsCwKTgAC9n8buef3YpJuWOzygtM2RwoksA&s",
+      "bgColor": "#d90429"
+    },
+    {
+      "id": "7",
+      "name": "Chill Vibes",
+      "desc": "Relaxing and smooth tracks",
+      "image": "https://i.scdn.co/image/ab67616d00001e02dd52604be80abba3d3bb6c00",
+      "bgColor": "#3a0ca3"
+    },
+    {
+      "id": "8",
+      "name": "Chill Vibes",
+      "desc": "Relaxing and smooth tracks",
+      "image": "https://charts-images.scdn.co/assets/locale_en/regional/weekly/region_cl_default.jpg",
+      "bgColor": "#f72585"
+    },
+    {
+      "id": "9",
+      "name": "Chill Vibes",
+      "desc": "Relaxing and smooth tracks",
+      "image": "https://i.audiomack.com/the-25-best-songs-of-2025-so-far/b59f940ed9.webp",
+      "bgColor": "#4361ee"
+    }
   ],
   "songs": [
     {
@@ -183,14 +176,14 @@
   ],
   "podcasts": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Tech Talk",
       "desc": "Podcast episode",
       "image": "...",
       "audio": "..."
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Tech Talk",
       "desc": "Podcast episode",
       "image": "...",

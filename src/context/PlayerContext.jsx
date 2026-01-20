@@ -9,8 +9,8 @@ const PlayerContextProvider = ({ children }) => {
   const seekBar = useRef(null);
 
   // ================= STATE =================
-  const [songs, setSongs] = useState([]);      // API-dən gələn bütün mahnılar
-  const [track, setTrack] = useState(null);    // Hazırki mahnı
+  const [songs, setSongs] = useState([]);
+  const [track, setTrack] = useState(null);
   const [playStatus, setPlayStatus] = useState(false);
 
   const [time, setTime] = useState({
@@ -21,6 +21,9 @@ const PlayerContextProvider = ({ children }) => {
   // 🔁 REPEAT
   const [isRepeat, setIsRepeat] = useState(false);
 
+  // 🔀 SHUFFLE (SƏNDƏ VAR İDİ – SAXLANILDI)
+  const [isShuffle, setIsShuffle] = useState(false);
+
   // ================= FETCH SONGS =================
   useEffect(() => {
     fetch("http://localhost:3001/songs")
@@ -28,7 +31,7 @@ const PlayerContextProvider = ({ children }) => {
       .then(data => {
         setSongs(data);
         if (data.length > 0) {
-          setTrack(data[0]); // default ilk mahnı
+          setTrack(data[0]);
         }
       })
       .catch(err => console.error("FETCH ERROR:", err));
@@ -37,7 +40,6 @@ const PlayerContextProvider = ({ children }) => {
   // ================= PLAY / PAUSE =================
   const play = async () => {
     if (!audioRef.current) return;
-
     try {
       await audioRef.current.play();
       setPlayStatus(true);
@@ -59,12 +61,10 @@ const PlayerContextProvider = ({ children }) => {
 
     setTrack(song);
     setPlayStatus(true);
-
-    // user action olduğu üçün autoplay icazəlidir
     setTimeout(() => play(), 0);
   };
 
-  // ================= PREVIOUS / NEXT =================
+  // ================= PREVIOUS =================
   const previous = () => {
     if (!track || songs.length === 0) return;
 
@@ -74,12 +74,24 @@ const PlayerContextProvider = ({ children }) => {
     }
   };
 
+  // ================= NEXT (🔀 SHUFFLE ƏLAVƏ OLUNAN YER) =================
   const next = () => {
     if (!track || songs.length === 0) return;
 
-    const index = songs.findIndex(s => String(s.id) === String(track.id));
-    if (index < songs.length - 1) {
-      setTrack(songs[index + 1]);
+    if (isShuffle) {
+      let randomSong;
+      do {
+        randomSong = songs[Math.floor(Math.random() * songs.length)];
+      } while (randomSong.id === track.id);
+
+      setTrack(randomSong);
+    } else {
+      const index = songs.findIndex(s => String(s.id) === String(track.id));
+      if (index < songs.length - 1) {
+        setTrack(songs[index + 1]);
+      } else {
+        setTrack(songs[0]);
+      }
     }
   };
 
@@ -126,30 +138,24 @@ const PlayerContextProvider = ({ children }) => {
     return () => audio.removeEventListener("timeupdate", updateTime);
   }, [track]);
 
-  // ================= 🔁 REPEAT / SONG ENDED =================
+  // ================= SONG ENDED (🔀 SHUFFLE BURDA DA İŞLƏYİR) =================
   useEffect(() => {
     if (!audioRef.current) return;
 
     const audio = audioRef.current;
 
     const handleEnded = () => {
-      console.log("SONG ENDED");
-
       if (isRepeat) {
-        // 🔁 repeat ON
         audio.currentTime = 0;
-        audio.play().catch(err =>
-          console.log("REPEAT PLAY BLOCKED:", err)
-        );
+        audio.play().catch(() => {});
       } else {
-        // ⏹ repeat OFF
-        setPlayStatus(false);
+        next(); // 🔀 shuffle ON → random, OFF → normal
       }
     };
 
     audio.addEventListener("ended", handleEnded);
     return () => audio.removeEventListener("ended", handleEnded);
-  }, [isRepeat]);
+  }, [isRepeat, isShuffle, track]);
 
   // ================= CONTEXT VALUE =================
   const contextValue = {
@@ -166,6 +172,8 @@ const PlayerContextProvider = ({ children }) => {
     next,
     isRepeat,
     setIsRepeat,
+    isShuffle,
+    setIsShuffle,
   };
 
   // ================= PROVIDER =================
